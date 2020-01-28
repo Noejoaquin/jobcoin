@@ -1,29 +1,53 @@
+require_relative 'utils'
+
 class JobCoinMixer
-  attr_reader :deposit_address_transactions
+  attr_reader :deposits_to_check_and_move
+  HOUSE_ADDRESS = "HouseTest".freeze
 
   def initialize
-    @deposit_address_transactions = {}
-    # @big_house = { num => user_addresses }
+    @deposits_to_check_and_move = {}
+    @house = {}
   end
 
   def add_transaction(transaction)
-    @deposit_address_transactions = @deposit_address_transactions.merge(transaction)
+    @deposits_to_check_and_move = @deposits_to_check_and_move.merge(transaction)
   end
 
   def listen
-
-    #when money arrives in accounts, transfer to the big house
-  end
-
-  def add_deposit_account_and_user_addresses(dep, addresses)
-    #add account and addresses to the class variable
+    while !@deposits_to_check_and_move.empty?
+      # { "deposit_address" => ["timestamp",["user", "addresses"]] }
+      deposits_to_check_and_move.each do |deposit_address, values|
+        timestamp, user_addresses = values[0], values[1]
+        transaction = find_transaction(deposit_address, timestamp)
+        next if transaction.empty?
+        puts "#{transaction}"
+        transfer_to_house(deposit_address, transaction["amount"], user_addresses)
+        remove_address(deposit_address)
+      end
+      sleep(1)
+    end
   end
 
   private
 
-  def transfer_to_big_house
-    #transfer money to big house
-    #doll out
+  def remove_address(address)
+    @deposits_to_check_and_move.delete(address)
+  end
+
+  def find_transaction(deposit_address, timestamp)
+    transactions = get_address_transactions(deposit_address)
+    puts "transactions: #{transactions}"
+    puts "transactions class: #{transactions.class}"
+    transactions.find do |trans|
+      trans["timestamp"] == timestamp
+    end
+  end
+
+  def transfer_to_house(deposit_address, amount, user_addresses)
+    puts "transferring to the big house, whoooooohoooooo"
+    status = transfer_funds(from: deposit_address, to: HOUSE_ADDRESS, amt: amount)
+    puts "status: #{status}"
+    @house[user_addresses] = amount if status == "OK"
   end
 
   def doll_out

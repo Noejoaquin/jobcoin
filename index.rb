@@ -30,14 +30,19 @@ def prompt(mixer = nil)
    go_deposit = gets.strip
 
    if go_deposit == "y"
-     transfer_funds(from_address, new_address_for_deposit, deposit_amount)
+     transfer_funds(from: from_address, to: new_address_for_deposit, amt: deposit_amount)
      last_trans = last_transaction_for(from_address) #returns hash
      timestamp = last_trans["timestamp"]
      user_addresses = addresses_for_withdrawal.split(",")
      mixer = JobCoinMixer.new
      mixer.add_transaction({new_address_for_deposit => [timestamp, user_addresses]})
+     puts "Your transaction has been made. Our mixer will now listen, and transfer
+     your coins"
      mixer.listen
-     
+
+     puts "your coins have made it to the house account!"
+     puts "current balance of the house account: #{get_address_balance("HouseTest")}"
+
       # puts "addresses_for_withdrawal: #{user_addresses}"
       # puts "mixer_transactions: #{mixer.deposit_address_transactions}"
      # puts "The mixer is currently mixing!\n"
