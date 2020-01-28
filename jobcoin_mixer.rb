@@ -1,12 +1,17 @@
 class JobCoinMixer
-  attr_reader :deposit_account, :user_addresses
+  attr_reader :deposit_address_transactions
 
-  def initialize(deposit_account, user_addresses)
-    @@deposits_and_addresses = { deposit_account => user_addresses }
-    @@big_house = { num => user_addresses }
+  def initialize
+    @deposit_address_transactions = {}
+    # @big_house = { num => user_addresses }
+  end
+
+  def add_transaction(transaction)
+    @deposit_address_transactions = @deposit_address_transactions.merge(transaction)
   end
 
   def listen
+
     #when money arrives in accounts, transfer to the big house
   end
 

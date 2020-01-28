@@ -16,6 +16,21 @@ def get_address_balance(address)
   JSON.parse(res.body)["balance"]
 end
 
+def get_address_transactions(address)
+  res = HTTParty.get(API_ADDRESS_URL + address)
+  JSON.parse(res.body)["transactions"]
+end
+
+def last_transaction_for(address)
+  all_trans = get_address_transactions(address)
+  all_trans.last
+end
+
+def get_all_transactions
+  res = HTTParty.get(API_TRANSACTIONS_URL)
+  JSON.parse(res.body)
+end
+
 def transfer_funds(from, to, amt)
   res = HTTParty.post(
     API_TRANSACTIONS_URL,
@@ -27,3 +42,5 @@ def transfer_funds(from, to, amt)
   )
   res["status"]
 end
+
+# puts last_transaction_for("NoesAddress1").class

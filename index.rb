@@ -1,4 +1,5 @@
 require_relative 'utils'
+require_relative 'jobcoin_mixer'
 
 def prompt(mixer = nil)
   puts "Welcome to the jobcoin mixer!"
@@ -15,7 +16,6 @@ def prompt(mixer = nil)
   deposit = gets.strip
 
  if deposit == 'y' || deposit == 'yes'
-   # JobCoinMixer.new(new_address_for_deposit, addresses_for_withdrawal).listen
    puts "Please enter the address from which you will be depositing your jobcoin:"
 
    from_address = gets.strip
@@ -28,13 +28,22 @@ def prompt(mixer = nil)
 
   puts "Are you sure you want to deposit #{deposit_amount} into #{new_address_for_deposit}? (y/n)"
    go_deposit = gets.strip
+
    if go_deposit == "y"
      transfer_funds(from_address, new_address_for_deposit, deposit_amount)
-     balance_in_from_address = get_address_balance(from_address)
-     balance_deposit_address = get_address_balance(new_address_for_deposit)
-     puts "Your new balance in #{from_address} is: #{balance_in_from_address}"
-     puts "The balance in #{new_address_for_deposit}: #{balance_deposit_address}"
-
+     last_trans = last_transaction_for(from_address) #returns hash
+     timestamp = last_trans["timestamp"]
+     user_addresses = addresses_for_withdrawal.split(",")
+     mixer = JobCoinMixer.new
+     mixer.add_transaction({new_address_for_deposit => [timestamp, user_addresses]})
+     mixer.listen
+     
+      # puts "addresses_for_withdrawal: #{user_addresses}"
+      # puts "mixer_transactions: #{mixer.deposit_address_transactions}"
+     # puts "The mixer is currently mixing!\n"
+     # balance_in_from_address = get_address_balance(from_address)
+     # balance_deposit_address = get_address_balance(new_address_for_deposit)
+     # puts "Your new balance in #{from_address} is: #{balance_in_from_address}"
    else
      puts "Ah, well maybe next time"
    end
@@ -42,3 +51,5 @@ def prompt(mixer = nil)
    puts "Ah, well maybe some other time then."
  end
 end
+
+prompt
