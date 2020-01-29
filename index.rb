@@ -42,6 +42,12 @@ def prompt(mixer = nil)
 
      puts "your coins have made it to the house account!"
      puts "current balance of the house account: #{get_address_balance("HouseTest")}"
+     puts "mixer internal house: #{mixer.house}"
+     puts "mixer deposits to check and move: #{mixer.deposits_to_check_and_move}"
+
+
+     puts "We will now doll out your tranferred coin to the addresses you provided us"
+
 
       # puts "addresses_for_withdrawal: #{user_addresses}"
       # puts "mixer_transactions: #{mixer.deposit_address_transactions}"

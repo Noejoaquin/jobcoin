@@ -1,7 +1,7 @@
 require_relative 'utils'
 
 class JobCoinMixer
-  attr_reader :deposits_to_check_and_move
+  attr_reader :deposits_to_check_and_move, :house
   HOUSE_ADDRESS = "HouseTest".freeze
 
   def initialize
@@ -48,9 +48,5 @@ class JobCoinMixer
     status = transfer_funds(from: deposit_address, to: HOUSE_ADDRESS, amt: amount)
     puts "status: #{status}"
     @house[user_addresses] = amount if status == "OK"
-  end
-
-  def doll_out
-
   end
 end

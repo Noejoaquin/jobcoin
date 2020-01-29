@@ -26,9 +26,9 @@ def last_transaction_for(address) #returns a hash of the last transaction
   all_trans.last
 end
 
-def get_all_transactions #returns an array of all transactions
+def get_all_transactions #returns an array of all transactions NOT IN CURRENT USE
   res = HTTParty.get(API_TRANSACTIONS_URL)
-  JSON.parse(res.body)
+  JSON.parse(res.body)["transactions"]
 end
 
 def transfer_funds(from:, to:, amt:) #returns "OK"
@@ -40,7 +40,7 @@ def transfer_funds(from:, to:, amt:) #returns "OK"
       amount: amt
     }
   )
-  res["status"]
+  JSON.parse(res.body)["status"]
 end
 
-puts get_address_transactions("001fb6d7")
+puts get_address_balance("NoesAddress1")
