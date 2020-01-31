@@ -1,21 +1,15 @@
 require 'minitest/autorun'
 require 'json'
-require_relative '../utils'
+require_relative '../jobcoin_client'
 
-class TestUtils < Minitest::Test
-  def test_generate_deposit_address
-    deposit_address = generate_deposit_address
-    assert_kind_of(String, deposit_address)
-    assert_equal(8, deposit_address.length)
-  end
-
+class TestJobcoinClient < Minitest::Test
   def test_get_address_balance
     mock = Minitest::Mock
     def mock.body
       {"balance":"27"}.to_json
     end
     HTTParty.stub :get, mock do
-      assert_equal "27", get_address_balance("address")
+      assert_equal "27", JobcoinClient.get_address_balance("address")
     end
   end
 
@@ -33,7 +27,7 @@ class TestUtils < Minitest::Test
       }.to_json
     end
     HTTParty.stub :get, mock do
-      transactions = get_address_transactions("address")
+      transactions = JobcoinClient.get_address_transactions("address")
       assert_equal 1, transactions.length
       trans = transactions.first
       assert_equal "fake_date", trans["timestamp"]
@@ -53,7 +47,7 @@ class TestUtils < Minitest::Test
     end
 
     HTTParty.stub :get, mock do
-      transaction = last_transaction_for("address")
+      transaction = JobcoinClient.last_transaction_for("address")
       assert_equal 1, transaction.length
     end
   end
@@ -70,7 +64,7 @@ class TestUtils < Minitest::Test
       }.to_json
     end
     HTTParty.stub :get, mock do
-      transactions = get_all_transactions
+      transactions = JobcoinClient.get_all_transactions
       assert_equal 3, transactions.length
     end
   end
@@ -81,7 +75,7 @@ class TestUtils < Minitest::Test
       {"status":"OK"}.to_json
     end
     HTTParty.stub :post, mock do
-      assert_equal "OK", transfer_funds(from: "Homer", to: "Bart", amt: "2")
+      assert_equal "OK", JobcoinClient.transfer_funds(from: "Homer", to: "Bart", amt: "2")
     end
   end
 end

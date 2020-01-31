@@ -1,4 +1,5 @@
 require_relative 'utils'
+require_relative 'jobcoin_client'
 require_relative 'jobcoin_mixer'
 
 def prompt(mixer = nil)
@@ -19,7 +20,7 @@ def prompt(mixer = nil)
    puts "Please enter the address from which you will be depositing your jobcoin:"
 
    from_address = gets.strip
-   from_address_balance = get_address_balance(from_address)
+   from_address_balance = JobcoinClient.get_address_balance(from_address)
 
    puts "The current balance at #{from_address} is: #{from_address_balance}.
     How much do you want to deposit?"
@@ -30,8 +31,8 @@ def prompt(mixer = nil)
    go_deposit = gets.strip
 
    if go_deposit == "y"
-     transfer_funds(from: from_address, to: new_address_for_deposit, amt: deposit_amount)
-     last_trans = last_transaction_for(from_address) #returns hash
+     JobcoinClient.transfer_funds(from: from_address, to: new_address_for_deposit, amt: deposit_amount)
+     last_trans = JobcoinClient.last_transaction_for(from_address) #returns hash
      timestamp = last_trans["timestamp"]
      user_addresses = addresses_for_withdrawal.split(",")
      mixer = JobCoinMixer.new unless mixer
@@ -41,7 +42,7 @@ def prompt(mixer = nil)
      mixer.listen
 
      puts "your coins have made it to the house account!"
-     puts "current balance of the house account: #{get_address_balance("HouseTest")}"
+     puts "current balance of the house account: #{JobcoinClient.get_address_balance("HouseTest")}"
      puts "mixer internal house: #{mixer.house}"
      puts "mixer deposits to check and move: #{mixer.deposits_to_check_and_move}"
 
@@ -53,7 +54,7 @@ def prompt(mixer = nil)
        puts "Okay, since there are no other deposits you would like to make,
        we will now distribute your funds to the addresses you initially provided for withdrawal"
        mixer.distribute_for_withdrawal
-
+       mixer.display_receipts
      end
       # puts "addresses_for_withdrawal: #{user_addresses}"
       # puts "mixer_transactions: #{mixer.deposit_address_transactions}"

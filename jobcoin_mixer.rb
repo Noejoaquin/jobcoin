@@ -1,4 +1,5 @@
 require_relative 'utils'
+require_relative 'jobcoin_client'
 
 class JobCoinMixer
   attr_reader :deposits_to_check_and_move, :house
@@ -33,16 +34,20 @@ class JobCoinMixer
     zero_amount_count = 0
     until zero_amount_count == @house.length
       @house.each do |accounts, amount|
-        if amount < 1 # transfer remainder to whichever account
-          transfer_funds(from: HOUSE_ADDRESS, to: accounts.first, amt: amount)
+        if amount.to_f < 1 # transfer remainder to whichever account
+          JobcoinClient.transfer_funds(from: HOUSE_ADDRESS, to: accounts.first, amt: amount)
           @house[accounts] = "0"
           zero_amount_count += 1
         else
-          remaining_amount = distribute_percentage(accounts, amt)
+          remaining_amount = distribute_percentage(accounts, amount)
           @house[accounts] = remaining_amount
         end
       end
     end
+  end
+
+  def display_receipts
+    puts 'I got DEM RECEIPTS'
   end
 
   private
@@ -51,8 +56,8 @@ class JobCoinMixer
       random_idx = rand(0...accounts.length)
       addrs_to_send = accounts[random_idx]
       amt_to_send = amt.to_f * PERCENTAGE_TO_SEND
-      transfer_funds(from: HOUSE_ADDRESS, to: addrs_to_send, amt: amt_to_send.to_s)
-      (amt - amt_to_send).to_s
+      JobcoinClient.transfer_funds(from: HOUSE_ADDRESS, to: addrs_to_send, amt: amt_to_send.to_s)
+      (amt.to_f - amt_to_send).to_s
   end
 
   def remove_address(address)
@@ -60,7 +65,7 @@ class JobCoinMixer
   end
 
   def find_transaction(deposit_address, timestamp)
-    transactions = get_address_transactions(deposit_address)
+    transactions = JobcoinClient.get_address_transactions(deposit_address)
     puts "transactions: #{transactions}"
     puts "transactions class: #{transactions.class}"
     transactions.find do |trans|
@@ -70,7 +75,7 @@ class JobCoinMixer
 
   def transfer_to_house(deposit_address, amount, user_addresses)
     puts "transferring to the big house, whoooooohoooooo"
-    status = transfer_funds(from: deposit_address, to: HOUSE_ADDRESS, amt: amount)
+    status = JobcoinClient.transfer_funds(from: deposit_address, to: HOUSE_ADDRESS, amt: amount)
     puts "status: #{status}"
     @house[user_addresses] = amount if status == "OK"
   end
