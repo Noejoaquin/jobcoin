@@ -35,12 +35,12 @@ How much do you want to deposit?"
      last_trans = JobcoinClient.last_transaction_for(from_address) #returns hash
      timestamp = last_trans["timestamp"]
      user_addresses = addresses_for_withdrawal.split(",")
-     mixer = JobCoinMixer.new unless mixer
+     mixer = JobcoinMixer.new unless mixer
      data_for_mixer = {
        user_address: from_address,
        withdrawal_addresses: user_addresses,
        timestamp: timestamp,
-       total_amt: deposit_amount
+       total_amt: deposit_amount #DO WE STILL WANT THIS?
      }
      mixer.add_transaction(new_address_for_deposit, data_for_mixer)
      puts "Your transaction has been made. Our mixer will now listen, and transfer your coins"
@@ -48,8 +48,6 @@ How much do you want to deposit?"
 
      puts "your coins have made it to the house account!"
      puts "current balance of the house account: #{JobcoinClient.get_address_balance("HouseTest")}"
-     puts "mixer internal house: #{mixer.house}"
-     puts "mixer deposits to check and move: #{mixer.deposits_to_check_and_move}"
 
      puts "Are there any more deposits you would like to make? (y/n)"
      more_deposits = gets.strip
@@ -57,7 +55,7 @@ How much do you want to deposit?"
        prompt(mixer)
      else
        puts "Okay, since there are no other deposits you would like to make, we will now distribute your
-funds to the addresses you initially provided for withdrawal..."
+funds to the addresses you initially provided for withdrawal...\n"
        mixer.distribute_for_withdrawal
        mixer.display_receipts
        exit
@@ -71,7 +69,7 @@ funds to the addresses you initially provided for withdrawal..."
 end
 
 def exit
-  puts "Thanks for mixing with us!"
+  puts "Thanks for mixing with us! Until next time!"
 end
 
 prompt

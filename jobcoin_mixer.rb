@@ -1,34 +1,29 @@
 require_relative 'utils'
 require_relative 'jobcoin_client'
 
-class JobCoinMixer
-  attr_reader :deposits_to_check_and_move, :house
+class JobcoinMixer
+  attr_reader :tracked_transactions, :house
   HOUSE_ADDRESS = "HouseTest".freeze
   PERCENTAGE_TO_SEND = 0.40
 
   def initialize
-    @deposits_to_check_and_move = {}
+    @tracked_transactions = {}
     @house = {}
   end
 
   def add_transaction(deposit_address ,options)
     mixer_struct = create_struct(options)
-    puts "------------"
-    puts "mixer_struct: #{mixer_struct}"
-    puts "------------"
-    #change this name
-    @deposits_to_check_and_move = @deposits_to_check_and_move.merge(
+    @tracked_transactions = @tracked_transactions.merge(
       { deposit_address => mixer_struct }
     )
   end
 
   def listen
-    while !@deposits_to_check_and_move.empty?
-      deposits_to_check_and_move.each do |deposit_address, mixer_struct| #implement the struct here...
+    while !@tracked_transactions.empty?
+      tracked_transactions.each do |deposit_address, mixer_struct| #implement the struct here...
         timestamp = mixer_struct.timestamp
         transaction = find_transaction(deposit_address, timestamp) #still valid, we want to make sure it got there!
         next if transaction.empty?
-        puts "#{transaction}"
         mixer_struct.total_amt = transaction["amount"]
         transfer_to_house(deposit_address, mixer_struct)
         remove_address(deposit_address)
@@ -59,8 +54,7 @@ class JobCoinMixer
     completed_mixes = @house.keys
     completed_mixes.each do |mixer_struct|
       balances = get_balances(mixer_struct.withdrawal_addresses)
-      # create_receipt(balances)
-      puts  "Initial Deposit of #{mixer_struct.total_amt} from #{mixer_struct.user_address}\n
+      puts "Initial Deposit of #{mixer_struct.total_amt} from #{mixer_struct.user_address}\n
       distributed to the following addresses:"
       create_receipt(balances).each do |line|
         puts "#{line}"
@@ -80,7 +74,7 @@ class JobCoinMixer
   def get_balances(addresses)
     addresses.map do |address|
       balance = JobcoinClient.get_address_balance(address)
-      {address: address, amount: balance}
+      { address: address, amount: balance }
     end
   end
 
@@ -95,7 +89,7 @@ class JobCoinMixer
       options[:user_address],
       options[:withdrawal_addresses],
       options[:total_amt],
-      options[:timestamp]
+      options[:timestamp] #DO WE STILL WANT THIS?
     )
   end
 
@@ -108,7 +102,7 @@ class JobCoinMixer
   end
 
   def remove_address(address)
-    @deposits_to_check_and_move.delete(address)
+    @tracked_transactions.delete(address)
   end
 
   def find_transaction(deposit_address, timestamp)
