@@ -39,7 +39,7 @@ describe JobcoinMixer do
       ]
       JobcoinClient.stub :get_address_transactions, transactions do
         JobcoinClient.stub :transfer_funds, "OK" do
-          @jobcoin_mixer.listen
+          @jobcoin_mixer.poll
         end
       end
     end

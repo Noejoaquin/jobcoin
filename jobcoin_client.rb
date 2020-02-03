@@ -1,7 +1,5 @@
-require('net/http')
 require 'httparty'
 
-# Urls
 API_BASE_URL = "http://jobcoin.gemini.com/pauper-jackpot/api"
 API_ADDRESS_URL = "#{API_BASE_URL}/addresses/"
 API_TRANSACTIONS_URL = "#{API_BASE_URL}/transactions"
@@ -21,11 +19,6 @@ class JobcoinClient
   def self.last_transaction_for(address) #returns a hash of the last transaction
     all_trans = get_address_transactions(address)
     all_trans.last
-  end
-
-  def self.get_all_transactions #returns an array of all transactions NOT IN CURRENT USE
-    res = HTTParty.get(API_TRANSACTIONS_URL)
-    JSON.parse(res.body)["transactions"]
   end
 
   def self.transfer_funds(from:, to:, amt:) #returns "OK"

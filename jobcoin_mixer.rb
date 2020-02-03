@@ -1,5 +1,6 @@
 require_relative 'utils'
 require_relative 'jobcoin_client'
+require 'colorize'
 
 class JobcoinMixer
   attr_reader :tracked_transactions, :house
@@ -18,7 +19,7 @@ class JobcoinMixer
     )
   end
 
-  def listen
+  def poll
     while !@tracked_transactions.empty?
       tracked_transactions.each do |deposit_address, mixer_struct| #implement the struct here...
         timestamp = mixer_struct.timestamp
@@ -35,6 +36,8 @@ class JobcoinMixer
   def distribute_for_withdrawal
     zero_amount_count = 0
     until zero_amount_count == @house.length
+      puts "house: #{@house}"
+      puts "zero_count: #{zero_amount_count}"
       @house.each do |mixer_struct, amt_left|
         if amt_left.to_f < 1 # transfer remainder to whichever account
           receiving_acct = mixer_struct.withdrawal_addresses.first
@@ -57,7 +60,7 @@ class JobcoinMixer
       puts "Initial Deposit of #{mixer_struct.total_amt} from #{mixer_struct.user_address}\n
       distributed to the following addresses:"
       create_receipt(balances).each do |line|
-        puts "#{line}"
+        puts "#{line}".green
       end
       puts "-------------------"
     end
@@ -107,21 +110,18 @@ class JobcoinMixer
 
   def find_transaction(deposit_address, timestamp)
     transactions = JobcoinClient.get_address_transactions(deposit_address)
-    puts "transactions: #{transactions}"
-    puts "transactions class: #{transactions.class}"
     transactions.find do |trans|
       trans["timestamp"] == timestamp
     end
   end
 
   def transfer_to_house(deposit_address, mixer_struct)
-    puts "transferring to the big house, whoooooohoooooo"
+    puts "transferring to the house account..."
     status = JobcoinClient.transfer_funds(
       from: deposit_address,
       to: HOUSE_ADDRESS,
       amt: mixer_struct.total_amt
     )
-    puts "status: #{status}"
     @house[mixer_struct] = mixer_struct.total_amt if status == "OK"
   end
 end

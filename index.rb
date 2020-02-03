@@ -1,18 +1,20 @@
 require_relative 'utils'
 require_relative 'jobcoin_client'
 require_relative 'jobcoin_mixer'
+require 'colorize'
 
 def prompt(mixer = nil)
-  puts "Welcome to the jobcoin mixer!"
+  puts "Welcome to the Jobcoin Mixer!".blue
   puts "Please enter a comma-separated list of new, unused Jobcoin addresses
 where your mixed Jobcoins will be sent for withdrawal:"
 
   addresses_for_withdrawal = gets.strip
   new_address_for_deposit = generate_deposit_address
 
-  puts "You may now send Jobcoins to this new deposit address: #{new_address_for_deposit}.
-If you choose, they will be sent to this destination. \n
-Would you like to deposit for future withdrawal?(Enter 'y' for 'yes', or 'n' for 'no')"
+  puts "You may now send Jobcoins to this new deposit address:"
+  puts "#{new_address_for_deposit}".green
+  puts "If you choose, they will be sent to this destination.
+Would you like to deposit for future withdrawal?(y/n)"
 
   deposit = gets.strip
 
@@ -27,7 +29,7 @@ How much do you want to deposit?"
 
   deposit_amount = gets.strip
 
-  puts "Are you sure you want to deposit #{deposit_amount} into #{new_address_for_deposit}? (y/n)"
+  puts "Are you sure you want to deposit #{deposit_amount} into #{new_address_for_deposit}? (y/n)".red
    go_deposit = gets.strip
 
    if go_deposit == "y"
@@ -43,11 +45,12 @@ How much do you want to deposit?"
        total_amt: deposit_amount #DO WE STILL WANT THIS?
      }
      mixer.add_transaction(new_address_for_deposit, data_for_mixer)
-     puts "Your transaction has been made. Our mixer will now listen, and transfer your coins"
-     mixer.listen
+     puts "Your transaction has been made. Our mixer will now poll, and transfer your coins"
+     mixer.poll
 
      puts "your coins have made it to the house account!"
-     puts "current balance of the house account: #{JobcoinClient.get_address_balance("HouseTest")}"
+     puts "current balance of the house account:"
+     puts "#{JobcoinClient.get_address_balance("HouseTest")}".green
 
      puts "Are there any more deposits you would like to make? (y/n)"
      more_deposits = gets.strip
