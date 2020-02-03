@@ -28,6 +28,6 @@ Some comments on my approach:
 - The goal for me was not to make a real coin mixer, so much as to demonstrate my understanding of the problem.
 
 ### Further Work (TODO)
-- I have some tests, but would like to add to them. The JobcoinMixer could do with some more scenarios, and the index.rb file could use some as well.
-- The index.rb file is a little difficult to read. I would love to map out some more user flows, and make that code more extendable. The current implementation is not too robust, and taking some more time there would be nice.
+- I have some tests, but would like to add to them. The `JobcoinMixer` could do with some more scenarios, and the `index.rb` file could use some as well.
+- The `index.rb` file is a little difficult to read. I would love to map out some more user flows, and make that code more extendable. The current implementation is not too robust, and taking some more time there would be nice.
 - Actually poll the whole P2P network. The api to gather all transactions was available, but I did not use it in this approach to the problem. With more time, I would love to make use of this endpoint.
