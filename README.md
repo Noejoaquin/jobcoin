@@ -19,6 +19,10 @@ You can of course make your own address for deposit, but can use the address `No
 
 Do be completely honest: I recommend simple inputs for the first test run. Only put one address for pick up, only do one deposit, etc, in order to see the program run to completion, and then have fun. Some scenarios may not work, but so it goes. If the program hangs for whatever reason, just exit and restart :).
 
+#### Tests 
+To run the tests for the application, you will have to navigate to the ruby_tests dir, and execute the spec file as so:
+`ruby <file_name>`
+
 
 ### Implementation
 I thoroughly enjoyed thinking through this challenge, and though my approach is not too involved, I can definitely see how intricate a system dedicated to 'mixing' and maintaining anonymity could become.
